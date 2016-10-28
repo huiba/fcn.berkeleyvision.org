@@ -26,8 +26,7 @@ class VOCSegDataLayer(caffe.Layer):
         for PASCAL VOC semantic segmentation.
 
         example
-
-        params = dict(voc_dir="/path/to/PASCAL/VOC2011",
+        params = dict(voc_dir="/home/ubuntu/fcn.berkeleyvision.org/data/pascal/VOC2012",
             mean=(104.00698793, 116.66876762, 122.67891434),
             split="val")
         """
