@@ -1,3 +1,6 @@
 caffe
 *.pyc
 *.caffemodel
+snapshot
+data
+*~

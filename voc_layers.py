@@ -111,6 +111,8 @@ class VOCSegDataLayer(caffe.Layer):
         """
         im = Image.open('{}/SegmentationClass/{}.png'.format(self.voc_dir, idx))
         label = np.array(im, dtype=np.uint8)
+        print label.shape
+        raw_input()
         label = label[np.newaxis, ...]
         return label
 

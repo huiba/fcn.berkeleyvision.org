@@ -1,12 +1,35 @@
++ ./solve.py
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+I1221 16:43:18.417500 32338 solver.cpp:48] Initializing solver from parameters: 
+train_net: "train.prototxt"
+test_net: "val.prototxt"
+test_iter: 736
+test_interval: 999999999
+base_lr: 1e-10
+display: 20
+max_iter: 100000
+lr_policy: "fixed"
+momentum: 0.99
+weight_decay: 0.0005
+snapshot: 4000
+snapshot_prefix: "snapshot/train"
+test_initialization: false
+average_loss: 20
+iter_size: 1
+I1221 16:43:18.417649 32338 solver.cpp:81] Creating training net from train_net file: train.prototxt
+I1221 16:43:18.419430 32338 net.cpp:58] Initializing net from parameters: 
+state {
+  phase: TRAIN
+}
 layer {
   name: "data"
   type: "Python"
   top: "data"
   top: "label"
   python_param {
-    module: "voc_layers"
-    layer: "SBDDSegDataLayer"
-    param_str: "{\'sbdd_dir\': \'../data/sbdd/dataset\', \'seed\': 1337, \'split\': \'train\', \'mean\': (104.00699, 116.66877, 122.67892)}"
+    module: "vaihingen_layers"
+    layer: "VaihingenSegDataLayer"
+    param_str: "{\'vai_dir\': \'../data/vaihingen\', \'seed\': 1337, \'split\': \'train\', \'mean\': (104.00699, 116.66877, 122.67892)}"
   }
 }
 layer {
@@ -528,3 +551,42 @@ layer {
     normalize: false
   }
 }
+I1221 16:43:18.419699 32338 layer_factory.hpp:77] Creating layer data
+I1221 16:43:18.421597 32338 net.cpp:100] Creating Layer data
+I1221 16:43:18.421617 32338 net.cpp:408] data -> data
+I1221 16:43:18.421639 32338 net.cpp:408] data -> label
+I1221 16:43:19.119068 32338 net.cpp:150] Setting up data
+I1221 16:43:19.119124 32338 net.cpp:157] Top shape: 1 3 2546 1903 (14535114)
+I1221 16:43:19.119138 32338 net.cpp:157] Top shape: 1 1 2546 1903 3 (14535114)
+I1221 16:43:19.119143 32338 net.cpp:165] Memory required for data: 116280912
+I1221 16:43:19.119154 32338 layer_factory.hpp:77] Creating layer data_data_0_split
+I1221 16:43:19.119191 32338 net.cpp:100] Creating Layer data_data_0_split
+I1221 16:43:19.119202 32338 net.cpp:434] data_data_0_split <- data
+I1221 16:43:19.119216 32338 net.cpp:408] data_data_0_split -> data_data_0_split_0
+I1221 16:43:19.119240 32338 net.cpp:408] data_data_0_split -> data_data_0_split_1
+I1221 16:43:19.119305 32338 net.cpp:150] Setting up data_data_0_split
+I1221 16:43:19.119324 32338 net.cpp:157] Top shape: 1 3 2546 1903 (14535114)
+I1221 16:43:19.119333 32338 net.cpp:157] Top shape: 1 3 2546 1903 (14535114)
+I1221 16:43:19.119338 32338 net.cpp:165] Memory required for data: 232561824
+I1221 16:43:19.119345 32338 layer_factory.hpp:77] Creating layer conv1_1
+I1221 16:43:19.119374 32338 net.cpp:100] Creating Layer conv1_1
+I1221 16:43:19.119382 32338 net.cpp:434] conv1_1 <- data_data_0_split_0
+I1221 16:43:19.119393 32338 net.cpp:408] conv1_1 -> conv1_1
+I1221 16:43:19.609211 32338 net.cpp:150] Setting up conv1_1
+I1221 16:43:19.609266 32338 net.cpp:157] Top shape: 1 64 2744 2101 (368969216)
+I1221 16:43:19.609274 32338 net.cpp:165] Memory required for data: 1708438688
+I1221 16:43:19.609305 32338 layer_factory.hpp:77] Creating layer relu1_1
+I1221 16:43:19.609325 32338 net.cpp:100] Creating Layer relu1_1
+I1221 16:43:19.609334 32338 net.cpp:434] relu1_1 <- conv1_1
+I1221 16:43:19.609346 32338 net.cpp:395] relu1_1 -> conv1_1 (in-place)
+I1221 16:43:19.610095 32338 net.cpp:150] Setting up relu1_1
+I1221 16:43:19.610116 32338 net.cpp:157] Top shape: 1 64 2744 2101 (368969216)
+I1221 16:43:19.610123 32338 net.cpp:165] Memory required for data: 3184315552
+I1221 16:43:19.610131 32338 layer_factory.hpp:77] Creating layer conv1_2
+I1221 16:43:19.610153 32338 net.cpp:100] Creating Layer conv1_2
+I1221 16:43:19.610160 32338 net.cpp:434] conv1_2 <- conv1_1
+I1221 16:43:19.610172 32338 net.cpp:408] conv1_2 -> conv1_2
+F1221 16:43:19.614070 32338 blob.cpp:34] Check failed: shape[i] <= 2147483647 / count_ (2101 vs. 1358) blob size exceeds INT_MAX
+*** Check failure stack trace: ***
+/home/kunnie/semantic_segmentation/vaihingen-fcn32s/../../caffe/python
+./solve.sh: line 6: 32338 Aborted                 (core dumped) ./solve.py

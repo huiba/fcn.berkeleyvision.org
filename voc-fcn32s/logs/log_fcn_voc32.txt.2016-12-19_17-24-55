@@ -1,0 +1,6 @@
++ ./solve.py
+/home/kunnie/semantic_segmentation/voc-fcn32s/../../caffe/python
+Traceback (most recent call last):
+  File "./solve.py", line 10, in <module>
+    import setproctitle
+ImportError: No module named setproctitle

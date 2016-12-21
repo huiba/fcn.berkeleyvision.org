@@ -1,12 +1,35 @@
++ ./solve.py
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+I1221 16:40:36.460170 32124 solver.cpp:48] Initializing solver from parameters: 
+train_net: "train.prototxt"
+test_net: "val.prototxt"
+test_iter: 736
+test_interval: 999999999
+base_lr: 1e-10
+display: 20
+max_iter: 100000
+lr_policy: "fixed"
+momentum: 0.99
+weight_decay: 0.0005
+snapshot: 4000
+snapshot_prefix: "snapshot/train"
+test_initialization: false
+average_loss: 20
+iter_size: 1
+I1221 16:40:36.479521 32124 solver.cpp:81] Creating training net from train_net file: train.prototxt
+I1221 16:40:36.480592 32124 net.cpp:58] Initializing net from parameters: 
+state {
+  phase: TRAIN
+}
 layer {
   name: "data"
   type: "Python"
   top: "data"
   top: "label"
   python_param {
-    module: "voc_layers"
-    layer: "SBDDSegDataLayer"
-    param_str: "{\'sbdd_dir\': \'../data/sbdd/dataset\', \'seed\': 1337, \'split\': \'train\', \'mean\': (104.00699, 116.66877, 122.67892)}"
+    module: "vaihingen_layers"
+    layer: "VaihingenSegDataLayer"
+    param_str: "{\'vai_dir\': \'../vaihingen\', \'seed\': 1337, \'split\': \'train\', \'mean\': (104.00699, 116.66877, 122.67892)}"
   }
 }
 layer {
@@ -528,3 +551,14 @@ layer {
     normalize: false
   }
 }
+I1221 16:40:36.480829 32124 layer_factory.hpp:77] Creating layer data
+I1221 16:40:36.482048 32124 net.cpp:100] Creating Layer data
+I1221 16:40:36.482065 32124 net.cpp:408] data -> data
+I1221 16:40:36.482079 32124 net.cpp:408] data -> label
+/home/kunnie/semantic_segmentation/vaihingen-fcn32s/../../caffe/python
+Traceback (most recent call last):
+  File "./solve.py", line 20, in <module>
+    solver = caffe.SGDSolver('solver.prototxt')
+  File "/home/kunnie/semantic_segmentation/vaihingen-fcn32s/../vaihingen_layers.py", line 51, in setup
+    self.indices = open(split_f, 'r').read().splitlines()
+IOError: [Errno 2] No such file or directory: '../vaihingen/train.txt'
