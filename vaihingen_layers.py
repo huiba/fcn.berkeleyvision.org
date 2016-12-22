@@ -1,8 +1,8 @@
+from __future__ import division
 import caffe
 
 import numpy as np
 from PIL import Image
-
 import random
 
 class VaihingenSegDataLayer(caffe.Layer):
@@ -12,7 +12,6 @@ class VaihingenSegDataLayer(caffe.Layer):
 
     Use this to feed data to a fully convolutional network.
     """
-
     def setup(self, bottom, top):
         """
         Setup data layer according to parameters:
@@ -59,6 +58,12 @@ class VaihingenSegDataLayer(caffe.Layer):
         if self.random:
             random.seed(self.seed)
             self.idx = random.randint(0, len(self.indices)-1)
+        self.palette = []
+        levels = 6
+        stepsize = 256 // levels
+        for i in range(256):
+            v = i // stepsize * stepsize
+            self.palette.extend((v, v, v))
 
 
     def reshape(self, bottom, top):
@@ -111,8 +116,12 @@ class VaihingenSegDataLayer(caffe.Layer):
         """
         im = Image.open('{}/gts_crop/{}'.format(self.vai_dir, idx))
         #im.show()
-        label = np.array(im, dtype=np.uint8)
-        print label.shape
-        raw_input()
+        label = np.array(self.load_index_im(im), dtype=np.uint8)
         label = label[np.newaxis, ...]
         return label
+
+    def load_index_im(self, im):
+        converted = Image.new('P', im.size)
+        converted.putpalette(self.palette)
+        converted.paste(im, (0, 0))
+        return converted

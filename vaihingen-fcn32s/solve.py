@@ -14,7 +14,7 @@ weights = '../ilsvrc-nets/VGG_FCN.caffemodel'
 
 # init
 #caffe.set_device(int(sys.argv[1]))
-caffe.set_device(0)
+caffe.set_device(1)
 caffe.set_mode_gpu()
 
 solver = caffe.SGDSolver('solver.prototxt')
@@ -25,7 +25,7 @@ interp_layers = [k for k in solver.net.params.keys() if 'up' in k]
 surgery.interp(solver.net, interp_layers)
 
 # scoring
-val = np.loadtxt('../data/vaihingen/valtxt', dtype=str)
+val = np.loadtxt('../data/vaihingen/val.txt', dtype=str)
 
 for _ in range(25):
     solver.step(400)
