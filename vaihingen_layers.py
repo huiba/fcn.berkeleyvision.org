@@ -4,6 +4,7 @@ import caffe
 import numpy as np
 from PIL import Image
 import random
+import os
 
 class VaihingenSegDataLayer(caffe.Layer):
     """
@@ -58,13 +59,32 @@ class VaihingenSegDataLayer(caffe.Layer):
         if self.random:
             random.seed(self.seed)
             self.idx = random.randint(0, len(self.indices)-1)
-        self.palette = []
-        levels = 6
-        stepsize = 256 // levels
-        for i in range(256):
-            v = i // stepsize * stepsize
-            self.palette.extend((v, v, v))
+        """
+        Lables for ISPRS 2D Semantic Labelling
+        0. Impervious surfaces (RGB: 255, 255, 255)
+        1. Bilding (RGB: 0, 0, 255)
+        2. Low vegetation (RGB: 0, 255, 255)
+        3. Tree (RGB: 0, 255, 0)
+        4. Car (RGB: 255, 255, 0)
+        5. Clutter/background (RGB: 255, 0, 0)
+        """
+        self.color2index = {
+            (255, 255, 255) : 0,
+            (0,     0, 255) : 1,
+            (0,   255, 255) : 2,
+            (0,   255,   0) : 3,
+            (255, 255,   0) : 4,
+            (255,   0,   0) : 5
+        }
 
+        self.index2color = {
+            0 : (255, 255, 255),
+            1 : (0,     0, 255),
+            2 : (0,   255, 255),
+            3 : (0,   255,   0),
+            4 : (255, 255,   0),
+            5 : (255,   0,   0)
+        }
 
     def reshape(self, bottom, top):
         # load image + label image pair
@@ -114,14 +134,34 @@ class VaihingenSegDataLayer(caffe.Layer):
         Load label image as 1 x height x width integer array of label indices.
         The leading singleton dimension is required by the loss.
         """
-        im = Image.open('{}/gts_crop/{}'.format(self.vai_dir, idx))
-        #im.show()
-        label = np.array(self.load_index_im(im), dtype=np.uint8)
-        label = label[np.newaxis, ...]
+        name = '{}/gts_crop/{}'.format(self.vai_dir, idx)
+        if os.path.isfile(name + '.npy'):
+            label = np.load(name + '.npy')
+        else:
+            im = np.array(Image.open(name))
+            label =  self.im2index(im)[np.newaxis, ...]
+            np.save(name + '.npy', label)
         return label
 
-    def load_index_im(self, im):
-        converted = Image.new('P', im.size)
-        converted.putpalette(self.palette)
-        converted.paste(im, (0, 0))
-        return converted
+
+    def im2index(self, im):
+        """
+        Lables for ISPRS 2D Semantic Labelling
+        0. Impervious surfaces (RGB: 255, 255, 255)
+        1. Bilding (RGB: 0, 0, 255)
+        2. Low vegetation (RGB: 0, 255, 255)
+        3. Tree (RGB: 0, 255, 0)
+        4. Car (RGB: 255, 255, 0)
+        5. Clutter/background (RGB: 255, 0, 0)
+        """
+        width, height, ch = im.shape
+        assert len(im.shape) == 3
+        assert ch == 3
+
+        m_lable = np.zeros((width, height), dtype=np.uint8)
+        for w in range(width):
+            for h in range(height):
+                r, g, b = im[w, h, :]
+                m_lable[w, h] = self.color2index[(r, g, b)]
+
+        return m_lable
